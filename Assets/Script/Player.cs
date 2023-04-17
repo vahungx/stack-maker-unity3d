@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     public Transform checkPoint;
     public Transform stackPoint;
+    public Transform playerPoint;
     private Rigidbody rb;
     public LayerMask whatIsTerrain;
     public List<Brick> brickList;
