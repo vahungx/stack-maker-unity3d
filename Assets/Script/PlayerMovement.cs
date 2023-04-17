@@ -16,13 +16,11 @@ public class PlayerMovement : MonoBehaviour
     private bool isForward;
     private bool isBack;
 
-    private float playerInput;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        movementSpeed = 300;
         isRight = isLeft = isBack = isForward = false;
     }
 
@@ -42,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
         //1 is Right
         if (isRight)
         {
+            Debug.Log("Right");
             rb.velocity = Vector3.right * movementSpeed * Time.deltaTime;
         }
         //2 is Left
