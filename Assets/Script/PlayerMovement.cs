@@ -11,8 +11,6 @@ public class PlayerMovement : MonoBehaviour
     private float threshhold = 5;
     private Vector3 lastMousePosition;
 
-    // State của player
-    public StateMove state;
 
 
     private bool isRight;
@@ -45,43 +43,8 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FixedUpdate()
     {
-<<<<<<< HEAD
-/*        Run();*/
         RunWithSwitchCase();   
-=======
-        Run();
-
-        // Run fix
-        RunRecommend(state);
-    }
-
-    /// <summary>
-    /// Đổi thành enum
-    /// Dùng Switch Case nếu có nhiều hơn 2 loại tối ưu code hơn đỡ phải khai báo nhiều bool và phải set tất cả biến bool trong khi chỉ cần set 1 biến là được
-    /// Nghiên cứu cách dùng enum 
-    /// </summary>
-    /// Ví dụ 
-    public enum StateMove
-    {
-        None,
-        Right, 
-        Left, 
-        Up, 
-        Down
-    }
-    void RunRecommend(StateMove state)
-    {
-        switch(state)
-        {
-            case StateMove.Left:
-                rb.velocity = Vector3.left * movementSpeed * Time.deltaTime;
-                break;
-            // Tương tự 
-            default: 
-                break;
-        }
-
->>>>>>> 0cf3b248173d9a0d22c43eb128c9bb53b21bfa0d
+/*        Run();*/
     }
 
     public void Run()
@@ -129,14 +92,8 @@ public class PlayerMovement : MonoBehaviour
                 {
                     isRight = true;
                     isForward = isLeft = isBack = false;
-<<<<<<< HEAD
                     state = StateMove.Right;
-=======
 
-                    // chuyển thành state tương ứng tương tự các phần dưới
-                    state = StateMove.Up;
-
->>>>>>> 0cf3b248173d9a0d22c43eb128c9bb53b21bfa0d
                 }
                 // 2. endPoint are in the 2sd and 3rd quadrants - rotate up = (0,0,1)
                 if (Vector3.Angle(playerInput, Vector3.up) <= 45)
@@ -162,7 +119,6 @@ public class PlayerMovement : MonoBehaviour
                 lastMousePosition = Input.mousePosition;
             }
         }
-<<<<<<< HEAD
         else if (Input.GetKeyUp(KeyCode.Mouse0)) state = StateMove.None;
     }
     
@@ -192,12 +148,8 @@ public class PlayerMovement : MonoBehaviour
             
             default:
                 break;
-=======
-        else
-        {
-            // Set lại là chưa di chuyển
-            state = StateMove.None;
->>>>>>> 0cf3b248173d9a0d22c43eb128c9bb53b21bfa0d
+
+
         }
     }
 }
