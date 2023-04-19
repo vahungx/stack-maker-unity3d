@@ -16,6 +16,16 @@ public class PlayerMovement : MonoBehaviour
     private bool isForward;
     private bool isBack;
 
+    private StateMove state; 
+
+    private enum StateMove
+    {
+        None,
+        Right,
+        Left,
+        Forward,
+        Back,
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +41,8 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        Run();
+/*        Run();*/
+        RunWithSwitchCase();   
     }
 
     public void Run()
@@ -40,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
         //1 is Right
         if (isRight)
         {
-            Debug.Log("Right");
+/*            Debug.Log("Right");*/
             rb.velocity = Vector3.right * movementSpeed * Time.deltaTime;
         }
         //2 is Left
@@ -75,31 +86,65 @@ public class PlayerMovement : MonoBehaviour
             {
                 // 4 case in this function:
                 // 1. endPoint are in the 1st and 8th quadrants - rotate right = (1,0,0)
-                if (Vector3.Angle(playerInput, Vector3.right) <= 45) 
+                if (Vector3.Angle(playerInput, Vector3.right) <= 45)
                 {
                     isRight = true;
                     isForward = isLeft = isBack = false;
+                    state = StateMove.Right;
                 }
                 // 2. endPoint are in the 2sd and 3rd quadrants - rotate up = (0,0,1)
                 if (Vector3.Angle(playerInput, Vector3.up) <= 45)
                 {
                     isForward = true;
                     isRight = isBack = isLeft = false;
+                    state = StateMove.Forward;
                 }
                 // 3. endPoint are in the 4th and 5th quadrants - rotate left = (-1,0,0)
                 if (Vector3.Angle(playerInput, Vector3.left) < 45)
                 {
                     isLeft = true;
                     isForward = isBack = isRight = false;
+                    state = StateMove.Left;
                 }
                 // 4. endPoint are in the 6th and 7th quadrants - rotate down = (0,0,-1)
                 if (Vector3.Angle(playerInput, Vector3.down) < 45)
                 {
                     isBack = true;
                     isForward = isLeft = isRight = false;
+                    state = StateMove.Back;
                 }
                 lastMousePosition = Input.mousePosition;
             }
+        }
+        else if (Input.GetKeyUp(KeyCode.Mouse0)) state = StateMove.None;
+    }
+    
+    private void RunWithSwitchCase()
+    {
+        switch(state)
+        {
+            case StateMove.Right:
+                rb.velocity = Vector3.right * movementSpeed * Time.deltaTime;
+                break;
+
+            case StateMove.Left:
+                rb.velocity = Vector3.left * movementSpeed * Time.deltaTime;
+                break;
+
+            case StateMove.Forward:
+                rb.velocity = Vector3.forward * movementSpeed * Time.deltaTime;
+                break;
+
+            case StateMove.Back:
+                rb.velocity = Vector3.back * movementSpeed * Time.deltaTime;
+                break;
+
+            case StateMove.None:
+                rb.velocity = Vector3.zero;
+                break;
+            
+            default:
+                break;
         }
     }
 }

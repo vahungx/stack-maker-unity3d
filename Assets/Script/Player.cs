@@ -1,34 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public Transform checkPoint;
     public Transform stackPoint;
     public Transform playerPoint;
+    public Transform finishPoint;
     private Rigidbody rb;
     public LayerMask whatIsTerrain;
-    public List<Brick> brickList;
+    public List<Brick> brickStackedList;
+    public List<Brick> brickFnishedList;
 
+    private bool isTriggered;
+    
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        brickList = new List<Brick>();
+        brickStackedList = new List<Brick>();
+        brickFnishedList = new List<Brick>();
+        isTriggered = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         PickUp();
+        Drop();
     }
-
-    /*    private bool checkHand()
-        {
-            return 
-        }*/
-
 
 
     private void PickUp()
@@ -40,5 +42,31 @@ public class Player : MonoBehaviour
                 brick.PickUp(this);
             }
         }
+    }
+
+    private void Drop ()
+    {
+        if (isTriggered)
+        {
+
+            foreach (Brick brick in brickStackedList)
+            {
+                brick.Drop(this);
+            }
+            rb.velocity = Vector3.zero;
+            isTriggered = false;
+        }
+
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        isTriggered = true;
+        Debug.Log(isTriggered);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        isTriggered = false;
+        Debug.Log(isTriggered);
     }
 }

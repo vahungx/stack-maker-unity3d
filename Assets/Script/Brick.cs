@@ -5,7 +5,9 @@ using UnityEngine;
 public class Brick : MonoBehaviour
 {
     public bool isPickUp {  get; private set; }
+    public bool isDrop { get; private set; }
     public float stackRange = 0.5f;
+    private float finishRange = 1f;
     private void Awake()
     {
         isPickUp = false;
@@ -18,15 +20,26 @@ public class Brick : MonoBehaviour
             isPickUp = true;
             //Pick Up Brick is that function
             //add bick in bricklist
-            player.brickList.Add(this);
-            Debug.Log(player.brickList.Count + "1");
-            player.playerPoint.localPosition = new Vector3(0, player.brickList.Count * stackRange, 0);
+            player.brickStackedList.Add(this);
+            player.playerPoint.localPosition = new Vector3(0, player.brickStackedList.Count * stackRange, 0);
             player.playerPoint.localRotation = Quaternion.identity;
             transform.parent = player.stackPoint;
-            Debug.Log(player.brickList.Count + "22");
-            transform.localPosition = new Vector3(0, player.brickList.Count * stackRange, 0);
+            transform.localPosition = new Vector3(0, player.brickStackedList.Count * stackRange, 0);
             transform.localRotation = Quaternion.identity;
-            GetComponent<BoxCollider>().size = new Vector3(1, 100, 2);
+/*            GetComponent<BoxCollider>().size = new Vector3(1, 100, 2);*/
+        }
+    }
+    public void Drop(Player player)
+    {
+        if (!isDrop)
+        {
+            isDrop = true;
+            player.brickFnishedList.Add(this);
+            transform.parent = player.finishPoint;
+            transform.localPosition = new Vector3(0, 0, player.brickFnishedList.Count * finishRange);
+            transform.localRotation = Quaternion.identity;
+            player.playerPoint.localPosition = new Vector3(0, 0.25f, player.brickFnishedList.Count * finishRange);
+            player.playerPoint.localRotation = Quaternion.identity;
         }
     }
 }
