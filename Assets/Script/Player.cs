@@ -45,18 +45,15 @@ public class Player : MonoBehaviour
     }
 
     private void Drop ()
-    {
+    {           
         if (isTriggered)
-        {
-
+        {   
+            GetComponent<PlayerMovement>().Stop();
             foreach (Brick brick in brickStackedList)
             {
                 brick.Drop(this);
             }
-            rb.velocity = Vector3.zero;
-            isTriggered = false;
         }
-
     }
     private void OnTriggerEnter(Collider other)
     {

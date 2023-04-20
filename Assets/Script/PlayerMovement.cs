@@ -148,9 +148,12 @@ public class PlayerMovement : MonoBehaviour
             
             default:
                 break;
-
-
         }
+    }
+
+    public void Stop()
+    {
+        state = StateMove.None;
     }
 }
     
