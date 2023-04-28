@@ -6,19 +6,14 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Rigidbody rb;
     public float movementSpeed;
-    private float threshhold = 5;
+    private float threshold = 5f;
     private Vector3 lastMousePosition;
+    private Vector3 targetPosition;
+    private Transform thisTransform;
+//    private bool canMove;
 
-
-
-    private bool isRight;
-    private bool isLeft;
-    private bool isForward;
-    private bool isBack;
-
-    private StateMove state; 
+    private StateMove state;
 
     private enum StateMove
     {
@@ -32,48 +27,20 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        isRight = isLeft = isBack = isForward = false;
+        thisTransform= transform;
+        targetPosition = thisTransform.position;
+        Debug.Log(thisTransform.position);
+        Debug.Log(targetPosition);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        StackMouseInput();
-    }
-    private void FixedUpdate()
-    {
-        RunWithSwitchCase();   
-/*        Run();*/
+        MouseInputToMove();
+        Move();
     }
 
-    public void Run()
-    {
-        //4 case in this function:
-        //1 is Right
-        if (isRight)
-        {
-/*            Debug.Log("Right");*/
-            rb.velocity = Vector3.right * movementSpeed * Time.deltaTime;
-        }
-        //2 is Left
-        if (isLeft)
-        {
-            rb.velocity = Vector3.left * movementSpeed * Time.deltaTime;
-        }
-        //3 is Up
-        if (isForward)
-        {
-            rb.velocity = Vector3.forward * movementSpeed * Time.deltaTime; 
-        }
-        //4 is Back
-        if (isBack) 
-        {
-            rb.velocity = Vector3.back * movementSpeed * Time.deltaTime;
-        }
-    }
-
-    private void StackMouseInput()
+    private void MouseInputToMove()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -81,73 +48,55 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.Mouse0))
-        {
-            // if magnetude << is 
+        {   
             Vector3 playerInput = -(lastMousePosition - Input.mousePosition);
-            if (playerInput.magnitude > threshhold)
+            if (playerInput.magnitude > threshold)
             {
-                // 4 case in this function:
-                // 1. endPoint are in the 1st and 8th quadrants - rotate right = (1,0,0)
-                if (Vector3.Angle(playerInput, Vector3.right) <= 45)
+                if (Vector3.Angle(playerInput, Vector3.right) < 45)
                 {
-                    isRight = true;
-                    isForward = isLeft = isBack = false;
-                    state = StateMove.Right;
+                    Raycasting(thisTransform.position, Vector3.right);
+                }
 
-                }
-                // 2. endPoint are in the 2sd and 3rd quadrants - rotate up = (0,0,1)
-                if (Vector3.Angle(playerInput, Vector3.up) <= 45)
+                if (Vector3.Angle(playerInput, Vector3.up) < 45)
                 {
-                    isForward = true;
-                    isRight = isBack = isLeft = false;
-                    state = StateMove.Forward;
+                    Raycasting(thisTransform.position, Vector3.forward);
                 }
-                // 3. endPoint are in the 4th and 5th quadrants - rotate left = (-1,0,0)
-                if (Vector3.Angle(playerInput, Vector3.left) < 45)
+
+                if (Vector3.Angle(playerInput, Vector3.left) <= 45)
                 {
-                    isLeft = true;
-                    isForward = isBack = isRight = false;
-                    state = StateMove.Left;
+                    Raycasting(thisTransform.position, Vector3.left);
                 }
-                // 4. endPoint are in the 6th and 7th quadrants - rotate down = (0,0,-1)
-                if (Vector3.Angle(playerInput, Vector3.down) < 45)
+
+                if (Vector3.Angle(playerInput, Vector3.down) <= 45)
                 {
-                    isBack = true;
-                    isForward = isLeft = isRight = false;
-                    state = StateMove.Back;
+                    Raycasting(thisTransform.position, Vector3.back);
                 }
                 lastMousePosition = Input.mousePosition;
             }
         }
-        else if (Input.GetKeyUp(KeyCode.Mouse0)) state = StateMove.None;
+        else { state = StateMove.None; }
+    }
+
+    private void Move()
+    {       
+        if ((thisTransform.position - targetPosition).sqrMagnitude > 0.0001f)
+            {
+                thisTransform.position = Vector3.MoveTowards(thisTransform.position, targetPosition, movementSpeed * Time.deltaTime);
+            }       
     }
     
-    private void RunWithSwitchCase()
-    {
-        switch(state)
+    private void Raycasting (Vector3 startRay, Vector3 direction)
+    {   
+        RaycastHit hit;
+        if (Physics.Raycast(startRay, direction, out hit, 1f))
         {
-            case StateMove.Right:
-                rb.velocity = Vector3.right * movementSpeed * Time.deltaTime;
-                break;
+            if (hit.transform.CompareTag("Brick"))
+            {
+                targetPosition = hit.transform.position;
+                startRay += direction;
+                Raycasting(startRay, direction);
+            }
 
-            case StateMove.Left:
-                rb.velocity = Vector3.left * movementSpeed * Time.deltaTime;
-                break;
-
-            case StateMove.Forward:
-                rb.velocity = Vector3.forward * movementSpeed * Time.deltaTime;
-                break;
-
-            case StateMove.Back:
-                rb.velocity = Vector3.back * movementSpeed * Time.deltaTime;
-                break;
-
-            case StateMove.None:
-                rb.velocity = Vector3.zero;
-                break;
-            
-            default:
-                break;
         }
     }
 
@@ -155,5 +104,29 @@ public class PlayerMovement : MonoBehaviour
     {
         state = StateMove.None;
     }
+    private void FindTarget(StateMove stateMove)
+        {
+            switch (stateMove)
+            {
+                case StateMove.Left:
+                    Raycasting(thisTransform.position, Vector3.left);
+                    break;
+
+                case StateMove.Right:
+                    Raycasting(thisTransform.position, Vector3.right);
+                    break;
+
+                case StateMove.Forward:
+                    Raycasting(thisTransform.position, Vector3.forward); 
+                    break;
+
+                case StateMove.Back:
+                    Raycasting(thisTransform.position, Vector3.back);
+                    break;
+                case StateMove.None:
+                    break;
+
+                default : break;
+            }
+        }
 }
-    
