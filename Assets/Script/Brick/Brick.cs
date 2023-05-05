@@ -1,22 +1,17 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Brick : MonoBehaviour
-{
-    public bool isPickUp {  get; private set; }
-    public bool isFinishDrop { get; private set; }
-    public float stackRange = 0.5f;
-    private float finishRange = 1f;
-    private void Awake()
-    {
-        isPickUp = false;
-        isFinishDrop = false;
-    }
+[RequireComponent(typeof(Collider))] // tự thêm collider nếu như chưa có
 
-    public void PickUp(Player player)
+public abstract class Brick: MonoBehaviour
+{
+    public abstract void OnTriggerExit(Collider other);
+}
+
+/*    public void PickUp(Player player)
     {
-        if(!isPickUp)
+*//*        if(!isPickUp)
         {
             isPickUp = true;
             //Pick Up Brick is that function
@@ -27,12 +22,12 @@ public class Brick : MonoBehaviour
             transform.parent = player.stackPoint;
             transform.localPosition = new Vector3(0, player.brickStackedList.Count * stackRange, 0);
             transform.localRotation = Quaternion.identity;
-/*            GetComponent<BoxCollider>().size = new Vector3(1, 100, 2);*/
-        }
+*//*            GetComponent<BoxCollider>().size = new Vector3(1, 100, 2);*//*
+        }*//*
     }
     public void FinishDrop(Player player)
     {
-        if (!isFinishDrop)
+*//*        if (!isFinishDrop)
         {
             isFinishDrop = true;
             player.brickFnishedList.Add(this);
@@ -41,6 +36,5 @@ public class Brick : MonoBehaviour
             transform.localRotation = Quaternion.identity;
             player.playerPoint.localPosition = new Vector3(0, 0.25f, player.brickFnishedList.Count * finishRange);
             player.playerPoint.localRotation = Quaternion.identity;
-        }
-    }
-}
+        }*//*
+    }*/

@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 lastMousePosition;
     private Vector3 targetPosition;
     private Transform thisTransform;
-//    private bool canMove;
+
 
     private StateMove state;
 
@@ -29,8 +29,6 @@ public class PlayerMovement : MonoBehaviour
     {
         thisTransform= transform;
         targetPosition = thisTransform.position;
-        Debug.Log(thisTransform.position);
-        Debug.Log(targetPosition);
     }
 
     // Update is called once per frame
@@ -90,7 +88,9 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(startRay, direction, out hit, 1f))
         {
-            if (hit.transform.CompareTag("Brick"))
+            if (hit.transform.CompareTag("Brick") || 
+                hit.transform.CompareTag("Inedible Brick") ||
+                hit.transform.CompareTag("Walkable"))
             {
                 targetPosition = hit.transform.position;
                 startRay += direction;
