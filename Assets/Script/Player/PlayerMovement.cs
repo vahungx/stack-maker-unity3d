@@ -10,8 +10,8 @@ public class PlayerMovement : MonoBehaviour
     private float threshold = 5f;
     private Vector3 lastMousePosition;
     private Vector3 targetPosition;
+    [SerializeField] private Transform checkPointTransform;
     private Transform thisTransform;
-
 
     private StateMove state;
 
@@ -27,8 +27,8 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        thisTransform= transform;
-        targetPosition = thisTransform.position;
+        thisTransform = transform;
+        targetPosition = thisTransform.position;   
     }
 
     // Update is called once per frame
@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MouseInputToMove()
     {
+        
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             lastMousePosition = Input.mousePosition;
@@ -52,22 +53,22 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (Vector3.Angle(playerInput, Vector3.right) < 45)
                 {
-                    Raycasting(thisTransform.position, Vector3.right);
+                    Raycasting(checkPointTransform.position, Vector3.right);
                 }
 
                 if (Vector3.Angle(playerInput, Vector3.up) < 45)
                 {
-                    Raycasting(thisTransform.position, Vector3.forward);
+                    Raycasting(checkPointTransform.position, Vector3.forward);
                 }
 
                 if (Vector3.Angle(playerInput, Vector3.left) <= 45)
                 {
-                    Raycasting(thisTransform.position, Vector3.left);
+                    Raycasting(checkPointTransform.position, Vector3.left);
                 }
 
                 if (Vector3.Angle(playerInput, Vector3.down) <= 45)
                 {
-                    Raycasting(thisTransform.position, Vector3.back);
+                    Raycasting(checkPointTransform.position, Vector3.back);
                 }
                 lastMousePosition = Input.mousePosition;
             }
@@ -86,13 +87,16 @@ public class PlayerMovement : MonoBehaviour
     private void Raycasting (Vector3 startRay, Vector3 direction)
     {   
         RaycastHit hit;
+       
         if (Physics.Raycast(startRay, direction, out hit, 1f))
         {
-            if (hit.transform.CompareTag("Brick") || 
+            if (hit.transform.CompareTag("Brick") ||
                 hit.transform.CompareTag("Inedible Brick") ||
-                hit.transform.CompareTag("Walkable"))
+                hit.transform.CompareTag("Walkable") ||
+                hit.transform.CompareTag("Win Block"))
             {
-                targetPosition = hit.transform.position;
+                targetPosition.x = hit.transform.position.x;
+                targetPosition.z = hit.transform.position.z;
                 startRay += direction;
                 Raycasting(startRay, direction);
             }

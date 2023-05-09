@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,9 +10,9 @@ public class Player : MonoBehaviour
 
     [SerializeField] private GameObject brickPrefabs;
     [SerializeField] private Transform stackPoint;
-    [SerializeField] private Transform playerPoint;
+    [SerializeField] private GameObject player;
 
-    private Stack<GameObject> brickStack;
+    private List<GameObject> brickStack;
 
     #region Singleton
     public static Player Ins;
@@ -21,16 +22,17 @@ public class Player : MonoBehaviour
     }
     #endregion
 
-// Start is called before the first frame update
-void Start()
+    // Start is called before the first frame update
+    void Start()
     {
-        brickStack = new Stack<GameObject> ();
+        brickStack = new List<GameObject> ();
     }
 
     // Update is called once per frame
     void Update()
     {
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Brick"))
@@ -45,22 +47,40 @@ void Start()
             //Pop
             PopFromStack(other.transform.position);
         }
+
+        if (other.CompareTag("Win Block"))
+        {
+            //set ani
+            //set ui 
+        }
     }
 
     private void PushToStack()
     {
         GameObject brick = Instantiate(brickPrefabs, transform.position, Quaternion.identity, stackPoint);
-        brickStack.Push(brick);
-
-        brick.transform.localPosition = new Vector3(0,(brickStack.Count - 1) /2, 0);
-        playerPoint.localPosition = new Vector3(0, brickStack.Count / 2, 0);
+        brickStack.Add(brick);
+        sort();
     }
 
     private void PopFromStack(Vector3 popPoint)
+    {   
+        if (brickStack.Count != 0) 
+        {
+            GameObject brick = brickStack[brickStack.Count - 1];
+            brickStack.Remove(brick);
+            brick.transform.parent = null;
+            brick.transform.position = popPoint;
+            player.transform.localPosition = new Vector3(0, brickStack.Count * 0.5f, 0);
+        }
+    }
+
+    private void sort()
     {
-        GameObject brick = brickStack.Pop();
-        brick.transform.parent = null;
-        brick.transform.position = popPoint;// đoạn này đang sai này.
-        playerPoint.localPosition = new Vector3(0, brickStack.Count / 2, 0);   
+        for (int i = 0;  i < brickStack.Count; i++)
+        {
+            brickStack[i].transform.localPosition = new Vector3(0, -0.75f + i * 0.5f, 0);
+
+        }
+        player.transform.localPosition = new Vector3(0, brickStack.Count * 0.5f, 0);
     }
 }

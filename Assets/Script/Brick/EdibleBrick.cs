@@ -16,7 +16,6 @@ public class EdibleBrick :Brick
 
     public override void OnTriggerExit(Collider other)
     {
-        Debug.Log("debug");
         gameObject.tag = "Walkable";
     }
 }
