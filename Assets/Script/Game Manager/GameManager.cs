@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
                 loadingText.text = ((int)(loadingCount * 100)).ToString() + "%";
                 levelPanel.SetActive(false);
             }
-
+            isLoading = false;
         }
         else
         {
