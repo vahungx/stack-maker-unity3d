@@ -1,17 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Player : MonoBehaviour
-{
-    private Rigidbody rb;
+{ 
 
     [SerializeField] private GameObject brickPrefabs;
     [SerializeField] private Transform stackPoint;
     [SerializeField] private GameObject player;
-
+    [SerializeField] private GameManager gameManager;
     private List<GameObject> brickStack;
 
     #region Singleton
@@ -51,7 +49,9 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Win Block"))
         {
             //set ani
-            //set ui 
+            //set ui
+            gameManager.endingPanel.SetActive(true);
+            
         }
     }
 

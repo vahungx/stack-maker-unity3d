@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Brick
+  - Inedible Brick
+  - Walkable
+  - Win Block
   layers:
   - Default
   - TransparentFX
