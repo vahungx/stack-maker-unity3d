@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -15,51 +15,27 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI loadingText;
     public TextMeshProUGUI levelText;
 
-    public Slider ProgressBar;
+    public Slider progressBar;
     private float loadingCount;
     public static int level;
-    public  bool isLoading { get; private set; }
 
     private void Awake()
     {
         level = PlayerPrefs.GetInt("level", 1);
-        isLoading = true;
     }
     // Start is called before the first frame update
     void Start()
     {   
         Time.timeScale = 1.0f;
         loadingCount = 0;
+        // cho loading chỗ này. nhưng mà nó không có timedelta ở đây :>
     }
 
     // Update is called once per frame
     void Update()
     {
-        //UI loading
-        if(isLoading)
-        {
-            if (loadingCount <= 1f)
-            {
-                loadingCount += Time.deltaTime * 0.1f;
-                ProgressBar.value = loadingCount;
-                loadingText.text = ((int)(loadingCount * 100)).ToString() + "%";
-                levelPanel.SetActive(false);
-            }
-            isLoading = false;
-        }
-        else
-        {
-            loadingPanel.SetActive(false);
-            levelPanel.SetActive(true);
-        }
-
-        if (endingPanel.activeSelf == true)
-        {
-            Time.timeScale = 0f;
-            levelPanel.SetActive(true);
-        }
-        //UI level
-        levelText.text = "LV: " + level.ToString();    
+        /*LoadSceneGame(GameState.Loader);*/
+        
     }
 
     public void Quit()
@@ -70,10 +46,52 @@ public class GameManager : MonoBehaviour
         Aplication.Quit();
     #endif
     }
+
     public void NextLevelLoadScene()
     {
         PlayerPrefs.SetInt("level", level + 1);
         SceneManager.LoadScene(0);
-        isLoading = false;
+    }
+
+    public void LoadLoaderScene()
+    {
+        SceneManager.LoadScene(1);
+        if (loadingCount <= 1f)
+        {
+            loadingCount += Time.deltaTime * 0.1f;
+            progressBar.value = loadingCount;
+            loadingText.text = ((int)(loadingCount * 100)).ToString() + "%";
+        }
+    }
+
+    private void LoadSceneGame(GameState gameState)
+    {
+        switch (gameState)
+        {
+            case GameState.Loader:
+                LoadLoaderScene();
+                break;
+            case GameState.Game:
+                SceneManager.LoadScene(0);
+                levelText.text = "LV: " + level.ToString();
+                if (endingPanel.activeSelf == true)
+                {
+                    gameState = GameState.End;
+                }
+                break;
+            case GameState.End:
+                Time.timeScale = 0f;
+                levelPanel.SetActive(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private enum GameState
+    {
+        Loader,
+        Game,
+        End,
     }
 }

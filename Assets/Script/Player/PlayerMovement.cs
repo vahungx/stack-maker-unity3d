@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     private Transform thisTransform;
 
     private StateMove state;
+    private bool isMove;
 
     private enum StateMove
     {
@@ -28,7 +29,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         thisTransform = transform;
-        targetPosition = thisTransform.position;   
+        targetPosition = thisTransform.position; 
+        isMove = false;
     }
 
     // Update is called once per frame
@@ -78,10 +80,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {       
-        if ((thisTransform.position - targetPosition).sqrMagnitude > 0.0001f)
+        if (!isMove)
+        {
+            if ((thisTransform.position - targetPosition).sqrMagnitude > 0.0001f)
             {
                 thisTransform.position = Vector3.MoveTowards(thisTransform.position, targetPosition, movementSpeed * Time.deltaTime);
-            }       
+                isMove = true;
+            }   
+        }
+        else isMove = false;
+      
     }
     
     private void Raycasting (Vector3 startRay, Vector3 direction)
@@ -104,10 +112,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void Stop()
-    {
-        state = StateMove.None;
-    }
     private void FindTarget(StateMove stateMove)
         {
             switch (stateMove)
